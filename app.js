@@ -28,34 +28,66 @@ document.addEventListener('DOMContentLoaded', () => {
 	createBoard();
 
 	// Drag the candies
-	squares.forEach(square => square.addEventListener('dragstart', dragstart));
-	squares.forEach(square => square.addEventListener('dragend', dragend));
-	squares.forEach(square => square.addEventListener('dragover', dragover));
-	squares.forEach(square => square.addEventListener('dragenter', dragenter));
-	squares.forEach(square => square.addEventListener('dragleave', dragleave));
-	squares.forEach(square => square.addEventListener('drop', drop));
+	let colorBeingDragged;
+	let colorBeingReplaced;
+	let squareIdBeingDragged;
+	let squareIdBeingReplaced;
 
-	function dragstart() {
-		console.log('this is dragstart');
+	squares.forEach(square => square.addEventListener('dragstart', dragStart));
+	squares.forEach(square => square.addEventListener('dragend', dragEnd));
+	squares.forEach(square => square.addEventListener('dragover', dragOver));
+	squares.forEach(square => square.addEventListener('dragenter', dragEnter));
+	squares.forEach(square => square.addEventListener('dragleave', dragLeave));
+	squares.forEach(square => square.addEventListener('drop', dragDrop));
+
+	function dragStart(e) {
+		colorBeingDragged = this.style.backgroundColor;
+		squareIdBeingDragged = parseInt(this.id);
+		console.log(colorBeingDragged);
+		console.log(this.id, 'dragstart');
 	}
 
-	function dragend() {
+	function dragEnd() {
 		console.log('this is dragend');
+		// What is a valid move in candy Crash
+		let validMoves = [
+			squareIdBeingDragged -1,
+			squareIdBeingDragged - width,
+			squareIdBeingDragged + 1,
+			squareIdBeingDragged + width
+		];
+
+		let validMove = validMoves.includes(squareIdBeingReplaced)
+
+		if (squareIdBeingReplaced && validMove) {
+			squareIdBeingReplaced = null;
+		} else if (squareIdBeingReplaced && !validMove) {
+			squares[squareIdBeingReplaced].style.backgroundColor = colorBeingReplaced
+			squares[squareIdBeingDragged].style.backgroundColor = colorBeingDragged
+		} else squares[squareIdBeingDragged].style.backgroundColor = colorBeingDragged
 	}
 
-	function dragover() {
-		console.log('this is dragover');
+	function dragOver(e) {
+		e.preventDefault();
+		console.log(this.id, 'dragover');
 	}
 
-	function dragenter() {
-		console.log('this is draenter');
+	function dragEnter(e) {
+		e.preventDefault();
+		console.log(this.id, 'dragenter')
 	}
 
-	function dragleave() {
-		console.log('this is dragleave')
+	function dragLeave() {
+		console.log(this.id, 'dragend');
 	}
 
-	function drop() {
-		console.log('this is drop');
+	function dragDrop() {
+		console.log(this.id, 'dragDrop');
+		colorBeingReplaced = this.style.backgroundColor;
+		squareIdBeingReplaced = parseInt(this.id);
+		this.style.backgroundColor = colorBeingDragged
+		squares[squareIdBeingDragged].style.backgroundColor = colorBeingReplaced
 	}
+
+	// check for matches
 });
